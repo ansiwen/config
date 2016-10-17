@@ -1,0 +1,10 @@
+[user]
+	name = John Trowbridge
+	email = trown@redhat.com
+[alias]
+	ci = commit
+	co = checkout
+	st = status
+	top = log -1
+	ll = log --graph --all --decorate
+	qf = commit -a --amend --no-edit
