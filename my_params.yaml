@@ -1,0 +1,6 @@
+parameter_defaults:
+  NovaComputeLibvirtType: qemu
+  ControllerCount: 1
+  ComputeCount: 1
+  OvercloudControlFlavor: control
+  OvercloudComputeFlavor: compute

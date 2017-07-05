@@ -1,10 +1,13 @@
 [user]
-	name = John Trowbridge
-	email = trown@redhat.com
-[alias]
-	ci = commit
-	co = checkout
-	st = status
-	top = log -1
-	ll = log --graph --all --decorate
-	qf = commit -a --amend --no-edit
+        email = sven@redhat.com
+        name = Sven Anderson
+[push]
+        default = simple
+[log]
+        decorate = yes
+[gitreview]
+        username = ansiwen
+[core]
+        autocrlf = input
+[pull]
+    rebase = true

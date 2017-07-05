@@ -1,13 +1,22 @@
 ---
 - hosts: undercloud
+  vars:
+    extra_path: /home/stack/tripleo-common
+
   tasks:
+  - name: Install EPEL repo
+    package: name=epel-release state=present
+    become: true
+
   - name: Install various packages
-    package: name={{item}} state=latest
+    package: name={{item}} state=present
     with_items:
     - python-devel
     - python-flake8
+    - python-pip
     - git
     - vim
+    - joe
     - cmake
     - gcc-c++
     - tmux
@@ -18,19 +27,40 @@
     - screen
     become: true
 
-  - name: Copy vimrc
-    copy: src=vimrc dest=~/.vimrc
+  - name: Install pip packages
+    pip: name={{item}} state=present extra_args="--user"
+    with_items:
+    - pip
+    - git-review
 
   - name: Copy gitconfig
     copy: src=gitconfig dest=~/.gitconfig
 
-  - name: Install Vundle
-    git: repo=https://github.com/VundleVim/Vundle.vim
-         dest=~/.vim/bundle/Vundle.vim
+  - name: Copy my_params.yaml
+    copy: src=my_params.yaml dest=~/my_params.yaml
 
-  - name: Install vim plugins
-    command: vim +PluginInstall +qall
+  - name: Install tripleo-common
+    git: repo=https://git.openstack.org/openstack/tripleo-common
+         dest=~/tripleo-common
 
-  - name: Build YouCompleteMe plugin
-    command: ./install.py chdir=~/.vim/bundle/YouCompleteMe
+  - name: Install tripleo-heat-templates
+    git: repo=https://git.openstack.org/openstack/tripleo-heat-templates
+         dest=~/tripleo-heat-templates
 
+  - name: Install puppet-tripleo
+    git: repo=https://git.openstack.org/openstack/puppet-tripleo
+         dest=~/puppet-modules/tripleo
+
+  - name: "add {{ extra_path }} to path"
+    lineinfile: >
+      dest=~/.bash_profile
+      state=present
+      backrefs=yes
+      regexp='PATH=(["]*)((?!.*?{{ extra_path }}).*?)(["]*)$'
+      line="PATH=\1\2:{{ extra_path }}\3"
+
+  - name: "add env variables"
+    lineinfile: >
+      dest=~/.bash_profile
+      state=present
+      line="export REQUESTS_CA_BUNDLE=/etc/pki/tls/certs/ca-bundle.crt"
